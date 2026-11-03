@@ -66,7 +66,8 @@ const Cadastro = {
       if (this.editandoId) {
         const atual = await Database.getDocumento("pessoas", this.editandoId);
         const loginNovo = this._gerarLogin(nome);
-        if (!atual.login || atual.login !== loginNovo) {
+        // Regenera o login só se ainda não existir ou se o nome mudou (preserva logins já cadastrados)
+        if (!atual.login || (atual.nome !== nome && atual.login !== loginNovo)) {
           dados.login = await this._loginUnico(loginNovo, this.editandoId);
         }
         await Database.atualizar("pessoas", this.editandoId, dados);
@@ -95,27 +96,56 @@ const Cadastro = {
     }
   },
 
-  // Login = 2 primeiros nomes juntos, sem acento e sem espaço (ex.: DavidsonOliveira)
+  // Login = primeiro nome + primeiro sobrenome válido, ignorando conectivos
+  // (de, da, do, das, dos, e) entre eles.
+  // Sem acentos, sem espaços, sem caracteres especiais, tudo em minúsculas.
+  // Ex.: "ISMAEL DOS SANTOS RANIERI" -> ismaelsantos; "LUIZ LEVY SANTOS DA SILVA" -> luizlevy
   _gerarLogin(nome) {
+    const conectivos = ["de", "da", "do", "das", "dos", "e"];
     const partes = String(nome || "")
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
       .trim()
       .split(/\s+/)
-      .slice(0, 2);
-    return partes.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
+      .filter(Boolean);
+
+    if (partes.length === 0) return "";
+
+    const primeiroNome = partes[0];
+    const sobrenome = partes.slice(1).find((p) => !conectivos.includes(p)) || "";
+
+    return (primeiroNome + sobrenome).replace(/[^a-z0-9]/g, "");
   },
 
-  // Garante login único (append 2, 3... se já existir); excetoId = ignora a própria pessoa na edição
+  // Garante login único no banco (append 2, 3... se já existir); excetoId = ignora a própria pessoa na edição.
+  // Compara sem diferenciar maiúsculas/minúsculas e considera também os logins da coleção "usuarios".
   async _loginUnico(base, excetoId) {
-    let login = base || "usuario";
+    const candidato = base || "usuario";
+    const usados = new Set();
+
+    const pessoas = await Database.listarCampos("pessoas", ["id", "login"]);
+    pessoas.forEach((p) => {
+      if (p.id !== excetoId && p.login) usados.add(String(p.login).toLowerCase());
+    });
+
+    try {
+      const usuarios = await Database.listarCampos("usuarios", ["usuario"]);
+      usuarios.forEach((u) => {
+        if (u.usuario) usados.add(String(u.usuario).toLowerCase());
+      });
+    } catch (erro) {
+      // Coleção "usuarios" indisponível: segue apenas com os logins de pessoas
+    }
+
+    let login = candidato;
     let n = 2;
-    for (;;) {
-      const existentes = await Database.buscarPorCampo("pessoas", "login", login);
-      if (!existentes.some((p) => p.id !== excetoId)) return login;
-      login = base + n;
+    while (usados.has(login.toLowerCase())) {
+      login = candidato + n;
       n++;
     }
+    return login;
   },
 
   // Matrícula sequencial no formato AAAA+XXX (ex.: 2026006)

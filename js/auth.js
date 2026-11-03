@@ -27,7 +27,7 @@ const Auth = {
       return usuarioGestao;
     }
 
-    // Pessoas: login = 2 primeiros nomes (ex.: DavidsonOliveira); fallback na matrícula
+    // Pessoas: login gerado do nome (ex.: davidsonoliveira); fallback na matrícula
     let pessoas, usuarios;
     try {
       pessoas = await Database.buscarPorCampo("pessoas", "login", usuario);

@@ -68,7 +68,7 @@ O sistema roda **100% online**, usando o **Supabase** (PostgreSQL gratuito na nu
 
 - Todos os perfis entram com **login + senha**
 - Admin tem login fixo: `admin` / `admin`
-- Alunos/Professores/Funcionários entram com o **login gerado automaticamente** = 2 primeiros nomes juntos sem acento (ex.: `MariaSilva`) — a matrícula também funciona como login alternativo
+- Alunos/Professores/Funcionários entram com o **login gerado automaticamente** = primeiro nome + primeiro sobrenome, sem conectivos (de/da/do/das/dos/e), acentos ou espaços, em minúsculas (ex.: `mariasilva`) — a matrícula também funciona como login alternativo
 - A **senha** de cada pessoa é a própria **data de nascimento** (só números, formato `ddmmaaaa`)
 
 ### Contas de teste pré-cadastradas

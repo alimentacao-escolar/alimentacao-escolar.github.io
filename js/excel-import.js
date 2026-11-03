@@ -240,8 +240,18 @@ const ImportadorExcel = {
         existentes.map((p) => String(p.matricula || "")).filter(Boolean)
       );
       const loginsExistentes = new Set(
-        existentes.map((p) => String(p.login || "")).filter(Boolean)
+        existentes.map((p) => String(p.login || "").toLowerCase()).filter(Boolean)
       );
+      // Logins criados manualmente pelo admin (coleção "usuarios") também bloqueiam
+      try {
+        const usuarios = await Database.listarCampos("usuarios", ["usuario"]);
+        usuarios.forEach((u) => {
+          const v = String(u.usuario || "").toLowerCase();
+          if (v) loginsExistentes.add(v);
+        });
+      } catch (erro) {
+        // Coleção "usuarios" indisponível: segue apenas com os logins de pessoas
+      }
       // Chave para evitar duplicidade ao reimportar: mesmo nome + mesmo nascimento
       const jaCadastradas = new Set(
         existentes.map(
@@ -289,11 +299,14 @@ const ImportadorExcel = {
           const base = l.login || Cadastro._gerarLogin(l.nome) || "usuario";
           let login = base;
           let n = 2;
-          while (loginsExistentes.has(login) || loginsUsados.has(login)) {
+          while (
+            loginsExistentes.has(login.toLowerCase()) ||
+            loginsUsados.has(login.toLowerCase())
+          ) {
             login = base + n;
             n++;
           }
-          loginsUsados.add(login);
+          loginsUsados.add(login.toLowerCase());
           jaCadastradas.add(chavePessoa);
 
           registros.push({
