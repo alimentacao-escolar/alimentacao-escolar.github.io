@@ -75,6 +75,18 @@ window.DADOS_INICIAIS_PRONTO = (async () => {
         senha: "123456",
         telefone: "(11) 99999-0005",
         criadoEm: "2026-08-25"
+      },
+      {
+        id: "p6",
+        nome: "João Silva",
+        categoria: "aluno",
+        turmaSetor: "3º Ano A",
+        matricula: "2026006",
+        login: "joaosilva",
+        senha: "15032008",
+        dataNascimento: "2008-03-15",
+        telefone: "(11) 99999-0006",
+        criadoEm: "2026-08-25"
       }
     ];
 
