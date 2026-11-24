@@ -427,9 +427,9 @@ O sistema está **100% online**:
 3. Configuração em js/supabase-config.js (URL + chave publishable)
 4. Adapter em js/database-supabase.js (API idêntica ao antigo database.js)
 5. Seed idempotente em js/dados-iniciais.js (só grava se "admin" estiver vazio)
-6. Repositório GitHub: ppiddj1-creator/alimentacao-escolar.github.io
+6. Repositório GitHub: alimentacao-escolar/alimentacao-escolar.github.io
 7. GitHub Pages publicando a raiz do repositório
-   → **Site no ar:** https://ppiddj1-creator.github.io/alimentacao-escolar.github.io/
+   → **Site no ar:** https://alimentacao-escolar.github.io/
 8. Workflow .github/workflows/keep-alive.yml pinga a API a cada 5 dias
    (evita a pausa automática por 1 semana de inatividade do plano gratuito)
 ```
@@ -501,9 +501,9 @@ O sistema está **100% online**:
 - Login aluno: `MariaSilva` / `123456` (ou a matrícula `2026001`)
 
 ### Onde testar
-- **Online (produção):** https://ppiddj1-creator.github.io/alimentacao-escolar.github.io/
+- **Online (produção):** https://alimentacao-escolar.github.io/
 - **Local:** abra o `index.html` com o Live Server (os dados vão para o Supabase, então funciona igual online)
-- **Repositório:** https://github.com/ppiddj1-creator/alimentacao-escolar.github.io
+- **Repositório:** https://github.com/alimentacao-escolar/alimentacao-escolar.github.io
 
 ### Dados de teste
 - O seed (`js/dados-iniciais.js`) só grava se a tabela `admin` estiver vazia — nunca apaga dados já existentes
