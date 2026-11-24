@@ -39,8 +39,9 @@ const Auth = {
       throw new Error(Database.erroAmigavel(erro));
     }
     if (pessoas.length > 0) {
-      const pessoa = pessoas[0];
-      if (pessoa.senha === senha) {
+      // Login pode se repetir (ex.: mariaeduarda, mariaeduarda2): escolhe pela senha
+      const pessoa = pessoas.find((p) => p.senha === senha);
+      if (pessoa) {
         const pessoaLogada = {
           id: pessoa.id,
           usuario: pessoa.login || pessoa.matricula,

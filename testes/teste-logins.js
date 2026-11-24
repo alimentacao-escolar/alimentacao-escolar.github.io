@@ -455,6 +455,21 @@ async function main() {
     await assert.rejects(() => Auth.login("mariasilva", "senhaErrada"), /inválidos/);
   });
 
+  await teste("login repetido autentica na pessoa certa pela senha", async () => {
+    resetarBanco([
+      { id: "p1", nome: "Maria Eduarda Cruz", login: "mariaeduarda", senha: "01022011", categoria: "aluno" },
+      { id: "p2", nome: "Maria Eduarda Silva", login: "mariaeduarda", senha: "26082010", categoria: "aluno" },
+      { id: "p3", nome: "Maria Eduarda Costa", login: "mariaeduarda", senha: "10102010", categoria: "aluno" }
+    ]);
+    const u1 = await Auth.login("mariaeduarda", "26082010");
+    assert.strictEqual(u1.id, "p2", "senha da 2ª pessoa deve cair na conta dela");
+    const u2 = await Auth.login("mariaeduarda", "10102010");
+    assert.strictEqual(u2.id, "p3", "senha da 3ª pessoa deve cair na conta dela");
+    const u3 = await Auth.login("mariaeduarda", "01022011");
+    assert.strictEqual(u3.id, "p1", "senha da 1ª pessoa deve cair na conta dela");
+    await assert.rejects(() => Auth.login("mariaeduarda", "senhaErrada"), /inválidos/);
+  });
+
   await teste("conta da coleção 'usuarios' (criada pelo admin) autentica", async () => {
     resetarBanco([], [
       { id: "u1", usuario: "coordenador", senha: "abc123", nome: "Coordenador", perfil: "gestao" }
